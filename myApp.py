@@ -12,7 +12,7 @@ ATTRIBUTES = [
 # Define the login and registration functions
 def login(username, password):
     # Read usernames and passwords from CSV file
-    df = pd.read_csv("user_credentials.csv")
+    df = pd.read_csv("csvs/credentials.csv")
     if (df['Username'] == username).any() and (df[df['Username'] == username]['Password'].iloc[0] == password):
         return True
     return False
@@ -20,7 +20,7 @@ def login(username, password):
 def register(username, password):
     # Append new registration to the CSV file
     new_data = pd.DataFrame({'Username': [username], 'Password': [password]})
-    with open("user_credentials.csv", "a") as file:
+    with open("csvs/credentials.csv", "a") as file:
         new_data.to_csv(file, header=False, index=False)
     return True
 
