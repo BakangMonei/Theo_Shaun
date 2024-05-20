@@ -122,12 +122,9 @@ def analysis_page():
     st.header("Analysis and Visualization")
     
     # Grid layout for charts
-    fig_col1, fig_col2, fig_col3 = st.columns(3)
-    fig_col4, fig_col5, fig_col6 = st.columns(3)
-    fig_col7, fig_col8, fig_col9 = st.columns(3)
-    fig_col10 = st.columns(1)[0]
+    fig_cols = st.columns(3)
     
-    with fig_col1:
+    with fig_cols[0]:
         # Bar chart for visits by country
         visit_counts = web_logs["Country of Origin"].value_counts()
         fig1 = plt.figure()
@@ -137,18 +134,18 @@ def analysis_page():
         plt.title('Visits by Country')
         st.pyplot(fig1)
     
-    with fig_col2:
+    with fig_cols[1]:
         # Pie chart for devices used
         device_counts = web_logs["Device Used"].value_counts()
         fig2 = px.pie(values=device_counts.values, names=device_counts.index, title='Devices Used')
         st.plotly_chart(fig2)
     
-    with fig_col3:
+    with fig_cols[2]:
         # Scatter plot for age vs. height
         fig3 = px.scatter(data, x='Age', y='Height', color='Gender', title='Age vs. Height')
         st.plotly_chart(fig3)
     
-    with fig_col4:
+    with fig_cols[0]:
         # Bar chart for sports distribution
         sport_counts = data["Sport"].value_counts()
         fig4 = plt.figure()
@@ -158,13 +155,13 @@ def analysis_page():
         plt.title('Athletes by Sport')
         st.pyplot(fig4)
     
-    with fig_col5:
+    with fig_cols[1]:
         # Pie chart for outcomes
         outcome_counts = data["Outcome"].value_counts()
         fig5 = px.pie(values=outcome_counts.values, names=outcome_counts.index, title='Match Outcomes')
         st.plotly_chart(fig5)
     
-    with fig_col6:
+    with fig_cols[2]:
         # Histogram for athlete ages
         fig6 = plt.figure()
         plt.hist(data['Age'], bins=10, color='skyblue', edgecolor='black')
@@ -173,7 +170,7 @@ def analysis_page():
         plt.title('Age Distribution of Athletes')
         st.pyplot(fig6)
     
-    with fig_col7:
+    with fig_cols[0]:
         # Line chart for rank over time
         data['Match Date'] = pd.to_datetime(data['Match Date'])
         rank_over_time = data.groupby(data['Match Date'].dt.to_period("M"))['Rank'].mean().reset_index()
@@ -181,12 +178,12 @@ def analysis_page():
         fig7 = px.line(rank_over_time, x='Match Date', y='Rank', title='Average Rank Over Time')
         st.plotly_chart(fig7)
     
-    with fig_col8:
+    with fig_cols[1]:
         # Box plot for athlete weights by sport
         fig8 = px.box(data, x='Sport', y='Weight', color='Sport', title='Athlete Weights by Sport')
         st.plotly_chart(fig8)
     
-    with fig_col9:
+    with fig_cols[2]:
         # Histogram for match dates
         fig9 = plt.figure()
         plt.hist(data['Match Date'].dt.to_pydatetime(), bins=10, color='green', edgecolor='black')
@@ -195,7 +192,7 @@ def analysis_page():
         plt.title('Distribution of Match Dates')
         st.pyplot(fig9)
     
-    with fig_col10:
+    with fig_cols[0]:
         # Bar chart for gender distribution
         gender_counts = data["Gender"].value_counts()
         fig10 = plt.figure()
