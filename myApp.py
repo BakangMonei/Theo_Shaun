@@ -84,6 +84,23 @@ def register_user(username, password):
             writer = csv.writer(file)
             writer.writerow([username, password])
 
+def save_feedback(username, feedback):
+    feedback_file = 'feedback.csv'
+    with open(feedback_file, mode='a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow([username, feedback])
+
+def load_feedback():
+    feedback_file = 'feedback.csv'
+    if os.path.exists(feedback_file):
+        with open(feedback_file, mode='r') as file:
+            reader = csv.reader(file)
+            feedback_list = list(reader)
+            feedback_df = pd.DataFrame(feedback_list, columns=["Username", "Feedback"])
+            return feedback_df
+    else:
+        return pd.DataFrame(columns=["Username", "Feedback"])
+
 # Streamlit Pages
 def login_page():
     st.title("Login Page")
@@ -104,6 +121,22 @@ def register_page():
     if st.button("Register"):
         register_user(new_username, new_password)
         st.success("User registered successfully!")
+
+def feedback_page():
+    st.title("Feedback Page")
+    if 'username' in st.session_state:
+        username = st.session_state['username']
+        feedback = st.text_area("Enter your feedback or summary")
+        if st.button("Submit Feedback"):
+            save_feedback(username, feedback)
+            st.success("Feedback submitted successfully!")
+        
+        st.header("Submitted Feedback")
+        feedback_df = load_feedback()
+        feedback_text = "\n".join([f"{row['Username']}: {row['Feedback']}" for _, row in feedback_df.iterrows()])
+        st.text_area("Feedback from all users", feedback_text, height=300)
+    else:
+        st.error("You need to log in to submit feedback")
 
 def analysis_page():
     st.title("Web Server Log Analysis Tool")
@@ -210,16 +243,18 @@ def analysis_page():
     if st.button("Export Web Logs as CSV"):
         web_logs.to_csv('exported_web_logs.csv', index=False)
         st.success("Web logs exported successfully!")
-        
+
 # Main
 if 'logged_in' not in st.session_state:
     st.session_state['logged_in'] = False
 
 st.sidebar.title("Navigation")
 if st.session_state['logged_in']:
-    page = st.sidebar.selectbox("Choose a page", ["Analysis Tool", "Logout"])
+    page = st.sidebar.selectbox("Choose a page", ["Analysis Tool", "Feedback", "Logout"])
     if page == "Analysis Tool":
         analysis_page()
+    elif page == "Feedback":
+        feedback_page()
     elif page == "Logout":
         st.session_state['logged_in'] = False
         st.success("Logged out successfully!")
@@ -229,3 +264,4 @@ else:
         login_page()
     elif page == "Register":
         register_page()
+
